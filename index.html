@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Buzzer App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("https://assets.codepen.io/605876/GeistVF.ttf") format("truetype");
+    }
+
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
+    :root {
+      --size: 20px;
+    }
+
+    body {
+      font-family: "Geist", sans-serif;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      background: hsl(0 0% 6%);
+      overflow: hidden;
+    }
+
+    .background {
+      position: fixed;
+      inset: 0;
+      background: conic-gradient(from 180deg at 50% 70%, hsla(0,0%,98%,1) 0deg, #eec32d 72deg, #ec4b4b 144deg, #709ab9 216deg, #4dffbf 288deg, hsla(0,0%,98%,1) 1turn);
+      mask:
+        radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50% 50% / var(--size) var(--size),
+        url("https://assets.codepen.io/605876/noise-mask.png") 256px 50% / 256px 256px;
+      mask-composite: intersect;
+      animation: flicker 20s infinite linear;
+      z-index: -1;
+    }
+
+    @keyframes flicker {
+      to {
+        mask-position: 50% 50%, 0 50%;
+      }
+    }
+
+    #mainContent {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      color: white;
+    }
+
+    #volumeControl {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    input[type="range"] {
+      width: 200px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="background"></div>
+
+  <div id="mainContent">
+    <h1>Buzzer App</h1>
+
+    <div id="volumeControl">
+      <span>🔊</span>
+      <input type="range" id="volumeSlider" min="0" max="100" value="50">
+      <span id="volumePercent">50%</span>
+    </div>
+
+    <audio id="pinpon" src="https://example.com/pinpon.mp3"></audio>
+    <audio id="boboo" src="https://example.com/boboo.mp3"></audio>
+  </div>
+
+  <script>
+    const slider = document.getElementById('volumeSlider')
+    const label = document.getElementById('volumePercent')
+    const audios = document.querySelectorAll('audio')
+
+    // 初期値セット
+    const saved = localStorage.getItem('volume')
+    const volume = saved !== null ? parseInt(saved) : 50
+    slider.value = volume
+    label.textContent = `${volume}%`
+    audios.forEach(audio => {
+      audio.volume = volume / 100
+    })
+
+    // スライダー操作
+    slider.addEventListener('input', () => {
+      const val = slider.value
+      label.textContent = `${val}%`
+      localStorage.setItem('volume', val)
+      audios.forEach(audio => {
+        audio.volume = val / 100
+      })
+    })
+  </script>
+</body>
+</html>
