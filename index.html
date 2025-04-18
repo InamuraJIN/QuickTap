@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>Buzzer App</title>
+  <title>QuickTap</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     @font-face {
@@ -22,8 +22,6 @@
 
     body {
       font-family: "Geist", sans-serif;
-      display: grid;
-      place-items: center;
       min-height: 100vh;
       background: hsl(0 0% 6%);
       overflow: hidden;
@@ -47,14 +45,48 @@
       }
     }
 
-    #mainContent {
-      position: relative;
-      z-index: 1;
-      text-align: center;
+    .centered {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
       color: white;
+      gap: 20px;
     }
 
-    #volumeControl {
+    .hidden {
+      display: none !important;
+    }
+
+    button {
+      font-size: 1.2rem;
+      padding: 10px 20px;
+      background: #ff8181;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    input {
+      font-size: 1.2rem;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      width: 250px;
+      text-align: center;
+    }
+
+    .admin-controls,
+    .player-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .volume-control {
       display: flex;
       align-items: center;
       gap: 10px;
@@ -64,52 +96,90 @@
     input[type="range"] {
       width: 200px;
     }
-
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-    }
   </style>
 </head>
 <body>
   <div class="background"></div>
 
-  <div id="mainContent">
-    <h1>Buzzer App</h1>
-
-    <div id="volumeControl">
-      <span>🔊</span>
-      <input type="range" id="volumeSlider" min="0" max="100" value="50">
-      <span id="volumePercent">50%</span>
-    </div>
-
-    <audio id="pinpon" src="https://example.com/pinpon.mp3"></audio>
-    <audio id="boboo" src="https://example.com/boboo.mp3"></audio>
+  <!-- ユーザー名入力 -->
+  <div id="loginScreen" class="centered">
+    <h1>QuickTap</h1>
+    <input type="text" id="username" placeholder="Enter your name" />
+    <button id="startBtn">GO</button>
   </div>
 
+  <!-- ゲーム画面 -->
+  <div id="gameScreen" class="centered hidden">
+    <div id="adminUI" class="admin-controls hidden">
+      <button onclick="playSound('seikai')">正解</button>
+      <button onclick="playSound('buu')">残念</button>
+    </div>
+    <div id="playerUI" class="player-controls hidden">
+      <button onclick="handleAnswer()">回答</button>
+    </div>
+    <div class="volume-control">
+      🔊 <input type="range" id="volumeSlider" min="0" max="100" value="50" />
+      <span id="volumeLabel">50%</span>
+    </div>
+  </div>
+
+  <!-- 音声 -->
+  <audio id="buu" src="assets/buu.mp3"></audio>
+  <audio id="seikai" src="assets/seikai.mp3"></audio>
+  <audio id="button" src="assets/button.mp3"></audio>
+
   <script>
-    const slider = document.getElementById('volumeSlider')
-    const label = document.getElementById('volumePercent')
-    const audios = document.querySelectorAll('audio')
+    const login = document.getElementById("loginScreen")
+    const game = document.getElementById("gameScreen")
+    const admin = document.getElementById("adminUI")
+    const player = document.getElementById("playerUI")
 
-    // 初期値セット
-    const saved = localStorage.getItem('volume')
-    const volume = saved !== null ? parseInt(saved) : 50
-    slider.value = volume
-    label.textContent = `${volume}%`
-    audios.forEach(audio => {
-      audio.volume = volume / 100
+    const usernameInput = document.getElementById("username")
+    const startBtn = document.getElementById("startBtn")
+
+    const slider = document.getElementById("volumeSlider")
+    const label = document.getElementById("volumeLabel")
+    const audios = document.querySelectorAll("audio")
+
+    const savedName = localStorage.getItem("username")
+    if (savedName) usernameInput.value = savedName
+
+    startBtn.addEventListener("click", () => {
+      const name = usernameInput.value.trim()
+      if (!name) return
+      localStorage.setItem("username", name)
+
+      login.classList.add("hidden")
+      game.classList.remove("hidden")
+
+      if (name === "Ad") {
+        admin.classList.remove("hidden")
+      } else {
+        player.classList.remove("hidden")
+      }
     })
 
-    // スライダー操作
-    slider.addEventListener('input', () => {
-      const val = slider.value
-      label.textContent = `${val}%`
-      localStorage.setItem('volume', val)
-      audios.forEach(audio => {
-        audio.volume = val / 100
-      })
+    slider.addEventListener("input", () => {
+      const v = slider.value
+      label.textContent = `${v}%`
+      localStorage.setItem("volume", v)
+      audios.forEach(a => a.volume = v / 100)
     })
+
+    const savedVol = localStorage.getItem("volume") || "50"
+    slider.value = savedVol
+    label.textContent = `${savedVol}%`
+    audios.forEach(a => a.volume = savedVol / 100)
+
+    function playSound(id) {
+      const el = document.getElementById(id)
+      el.currentTime = 0
+      el.play()
+    }
+
+    function handleAnswer() {
+      playSound("button")
+    }
   </script>
 </body>
 </html>
