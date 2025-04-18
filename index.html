@@ -25,7 +25,6 @@
       min-height: 100vh;
       background: hsl(0 0% 6%);
       overflow: hidden;
-      color: white;
     }
 
     .background {
@@ -37,7 +36,7 @@
         url("https://assets.codepen.io/605876/noise-mask.png") 256px 50% / 256px 256px;
       mask-composite: intersect;
       animation: flicker 20s infinite linear;
-      z-index: -2;
+      z-index: -1;
     }
 
     @keyframes flicker {
@@ -46,43 +45,18 @@
       }
     }
 
-    .bg-text {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: clamp(6rem, 15vw, 14rem);
-      font-family: "Geist", sans-serif;
-      font-weight: 200;
-      color: hsl(0 0% 2%);
-      mix-blend-mode: soft-light;
-      filter: drop-shadow(0 0 2px white);
-      text-shadow: 2px 2px white;
-      z-index: -1;
-      pointer-events: none;
-      user-select: none;
-    }
-
     .centered {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
+      color: white;
       gap: 20px;
     }
 
     .hidden {
       display: none !important;
-    }
-
-    input {
-      font-size: 1.2rem;
-      padding: 10px;
-      border-radius: 5px;
-      border: none;
-      width: 250px;
-      text-align: center;
     }
 
     button {
@@ -96,16 +70,20 @@
       cursor: pointer;
     }
 
-    .big-button {
-      width: 180px;
-      height: 180px;
-      font-size: 3rem;
-      border-radius: 50%;
-      background: #ff8181;
-      line-height: 180px;
-      text-align: center;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    input {
+      font-size: 1.2rem;
+      padding: 10px;
+      border-radius: 5px;
       border: none;
+      width: 250px;
+      text-align: center;
+    }
+
+    .admin-controls,
+    .player-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
     .volume-control {
@@ -118,46 +96,35 @@
     input[type="range"] {
       width: 200px;
     }
-
-    .answer-list {
-      margin-top: 20px;
-      font-size: 1.5rem;
-      text-shadow: 1px 1px 2px black;
-    }
   </style>
 </head>
 <body>
   <div class="background"></div>
-  <div class="bg-text">JIN</div>
 
-  <!-- ログイン -->
+  <!-- ユーザー名入力 -->
   <div id="loginScreen" class="centered">
     <h1>QuickTap</h1>
     <input type="text" id="username" placeholder="Enter your name" />
-    <button id="startBtn">GO!</button>
+    <button id="startBtn">GO</button>
   </div>
 
-  <!-- ゲーム -->
+  <!-- ゲーム画面 -->
   <div id="gameScreen" class="centered hidden">
-    <div id="adminUI" class="hidden">
+    <div id="adminUI" class="admin-controls hidden">
       <button onclick="playSound('seikai')">正解</button>
-      <button onclick="playSound('boo')">残念</button>
+      <button onclick="playSound('buu')">残念</button>
     </div>
-
-    <div id="playerUI" class="hidden">
-      <button class="big-button" onclick="handleAnswer()">押</button>
+    <div id="playerUI" class="player-controls hidden">
+      <button onclick="handleAnswer()">回答</button>
     </div>
-
     <div class="volume-control">
       🔊 <input type="range" id="volumeSlider" min="0" max="100" value="50" />
       <span id="volumeLabel">50%</span>
     </div>
-
-    <div id="answerList" class="answer-list"></div>
   </div>
 
   <!-- 音声 -->
-  <audio id="boo" src="assets/boo.mp3"></audio>
+  <audio id="buu" src="assets/buu.mp3"></audio>
   <audio id="seikai" src="assets/seikai.mp3"></audio>
   <audio id="button" src="assets/button.mp3"></audio>
 
@@ -166,7 +133,6 @@
     const game = document.getElementById("gameScreen")
     const admin = document.getElementById("adminUI")
     const player = document.getElementById("playerUI")
-    const answerList = document.getElementById("answerList")
 
     const usernameInput = document.getElementById("username")
     const startBtn = document.getElementById("startBtn")
@@ -174,8 +140,6 @@
     const slider = document.getElementById("volumeSlider")
     const label = document.getElementById("volumeLabel")
     const audios = document.querySelectorAll("audio")
-
-    let pushedUsers = []
 
     const savedName = localStorage.getItem("username")
     if (savedName) usernameInput.value = savedName
@@ -214,17 +178,7 @@
     }
 
     function handleAnswer() {
-      const name = localStorage.getItem("username") || "Unknown"
-      if (pushedUsers.includes(name)) return
-      if (pushedUsers.length < 3) {
-        playSound("button")
-      }
-      pushedUsers.push(name)
-      updateAnswerList()
-    }
-
-    function updateAnswerList() {
-      answerList.innerHTML = pushedUsers.map((u, i) => `${i + 1}. ${u}`).join("<br>")
+      playSound("button")
     }
   </script>
 </body>
