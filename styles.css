@@ -1,0 +1,147 @@
+@font-face {
+  font-family: "Geist";
+  src: url("https://assets.codepen.io/605876/GeistVF.ttf") format("truetype");
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: "Geist", sans-serif;
+  background: hsl(0 0% 6%);
+  color: white;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.background {
+  position: fixed;
+  inset: 0;
+  background: conic-gradient(from 180deg at 50% 70%, hsla(0,0%,98%,1) 0deg, #eec32d 72deg, #ec4b4b 144deg, #709ab9 216deg, #4dffbf 288deg, hsla(0,0%,98%,1) 1turn);
+  mask: radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50% 50% / 20px 20px,
+         url("https://assets.codepen.io/605876/noise-mask.png") 256px 50% / 256px 256px;
+  mask-composite: intersect;
+  animation: flicker 20s infinite linear;
+  z-index: -2;
+}
+
+@keyframes flicker {
+  to {
+    mask-position: 50% 50%, 0 50%;
+  }
+}
+
+.bg-text {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(6rem, 15vw, 14rem);
+  font-weight: 200;
+  color: hsl(0 0% 2%);
+  mix-blend-mode: soft-light;
+  filter: drop-shadow(0 0 2px white);
+  text-shadow: 2px 2px white;
+  z-index: -1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 20px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+input {
+  font-size: 1.2rem;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  width: 250px;
+  text-align: center;
+}
+
+button {
+  font-size: 1.2rem;
+  padding: 20px 30px;
+  background: #888;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 200px;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background: #999;
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+#correctBtn {
+  background: #4CAF50;
+}
+
+#correctBtn:hover {
+  background: #5DC161;
+}
+
+#wrongBtn {
+  background: #F44336;
+}
+
+#wrongBtn:hover {
+  background: #FF5547;
+}
+
+#answerBtn {
+  background: #2196F3;
+}
+
+#answerBtn:hover {
+  background: #32A7FF;
+}
+
+.disabled {
+  background: #444 !important;
+  pointer-events: none;
+  opacity: 0.6;
+  transform: none !important;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+#volumeIcon {
+  cursor: pointer;
+}
+
+input[type="range"] {
+  width: 200px;
+}
+
+.answer-list {
+  margin-top: 20px;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 2px black;
+}

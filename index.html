@@ -4,116 +4,7 @@
   <meta charset="UTF-8">
   <title>QuickTap</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    @font-face {
-      font-family: "Geist";
-      src: url("https://assets.codepen.io/605876/GeistVF.ttf") format("truetype");
-    }
-
-    * {
-      box-sizing: border-box;
-      padding: 0;
-      margin: 0;
-    }
-
-    body {
-      font-family: "Geist", sans-serif;
-      background: hsl(0 0% 6%);
-      color: white;
-      min-height: 100vh;
-      overflow: hidden;
-    }
-
-    .background {
-      position: fixed;
-      inset: 0;
-      background: conic-gradient(from 180deg at 50% 70%, hsla(0,0%,98%,1) 0deg, #eec32d 72deg, #ec4b4b 144deg, #709ab9 216deg, #4dffbf 288deg, hsla(0,0%,98%,1) 1turn);
-      mask: radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50% 50% / 20px 20px,
-             url("https://assets.codepen.io/605876/noise-mask.png") 256px 50% / 256px 256px;
-      mask-composite: intersect;
-      animation: flicker 20s infinite linear;
-      z-index: -2;
-    }
-
-    @keyframes flicker {
-      to {
-        mask-position: 50% 50%, 0 50%;
-      }
-    }
-
-    .bg-text {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: clamp(6rem, 15vw, 14rem);
-      font-weight: 200;
-      color: hsl(0 0% 2%);
-      mix-blend-mode: soft-light;
-      filter: drop-shadow(0 0 2px white);
-      text-shadow: 2px 2px white;
-      z-index: -1;
-      pointer-events: none;
-      user-select: none;
-    }
-
-    .centered {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      gap: 20px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    input {
-      font-size: 1.2rem;
-      padding: 10px;
-      border-radius: 5px;
-      border: none;
-      width: 250px;
-      text-align: center;
-    }
-
-    button {
-      font-size: 1.2rem;
-      padding: 20px 30px;
-      background: #888;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      min-width: 200px;
-    }
-
-    .disabled {
-      background: #444 !important;
-      pointer-events: none;
-      opacity: 0.6;
-    }
-
-    .volume-control {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 30px;
-    }
-
-    input[type="range"] {
-      width: 200px;
-    }
-
-    .answer-list {
-      margin-top: 20px;
-      font-size: 1.5rem;
-      text-shadow: 1px 1px 2px black;
-    }
-  </style>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <div class="background"></div>
@@ -122,23 +13,24 @@
   <!-- ログイン -->
   <div id="loginScreen" class="centered">
     <h1>QuickTap</h1>
-    <input type="text" id="username" placeholder="Enter your name" />
+    <input type="text" id="username" placeholder="ユーザー名を入力" />
     <button id="startBtn">GO!</button>
   </div>
 
   <!-- ゲーム -->
   <div id="gameScreen" class="centered hidden">
     <div id="adminUI" class="hidden">
-      <button onclick="emitSound('seikai')">正解</button>
-      <button onclick="emitSound('boo')">残念</button>
+      <button id="correctBtn">正解</button>
+      <button id="wrongBtn">残念</button>
     </div>
 
     <div id="playerUI" class="hidden">
-      <button id="answerBtn" onclick="emitAnswer()">回答</button>
+      <button id="answerBtn">CRICK!</button>
     </div>
 
     <div class="volume-control">
-      🔊 <input type="range" id="volumeSlider" min="0" max="100" value="50" />
+      <span id="volumeIcon">🔊</span> 
+      <input type="range" id="volumeSlider" min="0" max="100" value="50" />
       <span id="volumeLabel">50%</span>
     </div>
 
@@ -152,82 +44,11 @@
 
   <!-- Socket.io -->
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script>
-    const socket = io()
-
-    const login = document.getElementById("loginScreen")
-    const game = document.getElementById("gameScreen")
-    const admin = document.getElementById("adminUI")
-    const player = document.getElementById("playerUI")
-    const answerBtn = document.getElementById("answerBtn")
-    const answerList = document.getElementById("answerList")
-    const slider = document.getElementById("volumeSlider")
-    const label = document.getElementById("volumeLabel")
-    const audios = document.querySelectorAll("audio")
-    const usernameInput = document.getElementById("username")
-    const startBtn = document.getElementById("startBtn")
-
-    let alreadyPushed = false
-
-    const savedName = localStorage.getItem("username")
-    if (savedName) usernameInput.value = savedName
-
-    startBtn.addEventListener("click", () => {
-      const name = usernameInput.value.trim()
-      if (!name) return
-      localStorage.setItem("username", name)
-      socket.emit("username", name)
-      login.classList.add("hidden")
-      game.classList.remove("hidden")
-      if (name === "Ad") {
-        admin.classList.remove("hidden")
-      } else {
-        player.classList.remove("hidden")
-      }
-    })
-
-    slider.addEventListener("input", () => {
-      const v = slider.value
-      label.textContent = `${v}%`
-      localStorage.setItem("volume", v)
-      audios.forEach(a => a.volume = v / 100)
-    })
-
-    const savedVol = localStorage.getItem("volume") || "50"
-    slider.value = savedVol
-    label.textContent = `${savedVol}%`
-    audios.forEach(a => a.volume = savedVol / 100)
-
-    function emitAnswer() {
-      if (alreadyPushed) return
-      alreadyPushed = true
-      answerBtn.classList.add("disabled")
-      socket.emit("answer")
-    }
-
-    function emitSound(type) {
-      socket.emit("sound", type)
-    }
-
-    function resetPushState() {
-      alreadyPushed = false
-      answerBtn.classList.remove("disabled")
-    }
-
-    socket.on("updateList", (list) => {
-      answerList.innerHTML = list.map((u, i) => `${i + 1}. ${u}`).join("<br>")
-    })
-
-    socket.on("play", (soundId) => {
-      const audio = document.getElementById(soundId)
-      if (audio) {
-        audio.currentTime = 0
-        audio.play()
-      }
-      if (soundId === "seikai" || soundId === "boo") {
-        resetPushState()
-      }
-    })
-  </script>
+  
+  <!-- アプリケーションスクリプト -->
+  <script src="js/audio-controller.js"></script>
+  <script src="js/ui-controller.js"></script>
+  <script src="js/socket-handler.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
