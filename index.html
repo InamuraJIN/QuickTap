@@ -126,17 +126,46 @@
       <button onclick="emitSound('boo')">残念</button>
     </div>
 
-    <div id="playerUI" class="hidden">
-      <button onclick="emitAnswer()">押</button>
-    </div>
+<!-- プレイヤー用 UI -->
+<div id="playerUI" class="hidden">
+  <button id="answerBtn" class="big-button" onclick="emitAnswer()">回答</button>
+</div>
 
-    <div class="volume-control">
-      🔊 <input type="range" id="volumeSlider" min="0" max="100" value="50" />
-      <span id="volumeLabel">50%</span>
-    </div>
+<!-- 省略（音量・音声・Socket.io等） -->
 
-    <div id="answerList" class="answer-list"></div>
-  </div>
+<script>
+  // ...前略（変数宣言など）
+
+  let alreadyPushed = false // 押下フラグ
+
+  function emitAnswer() {
+    if (alreadyPushed) return
+    alreadyPushed = true
+    answerBtn.classList.add("disabled")
+    socket.emit("answer")
+  }
+
+  function resetPushState() {
+    alreadyPushed = false
+    answerBtn.classList.remove("disabled")
+  }
+
+  socket.on("updateList", (list) => {
+    answerList.innerHTML = list.map((u, i) => `${i + 1}. ${u}`).join("<br>")
+  })
+
+  socket.on("play", (soundId) => {
+    const audio = document.getElementById(soundId)
+    if (audio) {
+      audio.currentTime = 0
+      audio.play()
+    }
+
+    if (soundId === "seikai" || soundId === "boo") {
+      resetPushState()
+    }
+  })
+</script>
 
   <!-- 音声 -->
   <audio id="boo" src="assets/boo.mp3"></audio>
