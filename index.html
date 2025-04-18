@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>QuickTap</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     @font-face {
       font-family: "Geist";
@@ -81,13 +81,20 @@
 
     button {
       font-size: 1.2rem;
-      padding: 15px 25px;
+      padding: 20px 30px;
       background: #888;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       color: white;
       font-weight: bold;
       cursor: pointer;
+      min-width: 200px;
+    }
+
+    .disabled {
+      background: #444 !important;
+      pointer-events: none;
+      opacity: 0.6;
     }
 
     .volume-control {
@@ -126,53 +133,24 @@
       <button onclick="emitSound('boo')">残念</button>
     </div>
 
-<!-- プレイヤー用 UI -->
-<div id="playerUI" class="hidden">
-  <button id="answerBtn" class="big-button" onclick="emitAnswer()">回答</button>
-</div>
+    <div id="playerUI" class="hidden">
+      <button id="answerBtn" onclick="emitAnswer()">回答</button>
+    </div>
 
-<!-- 省略（音量・音声・Socket.io等） -->
+    <div class="volume-control">
+      🔊 <input type="range" id="volumeSlider" min="0" max="100" value="50" />
+      <span id="volumeLabel">50%</span>
+    </div>
 
-<script>
-  // ...前略（変数宣言など）
-
-  let alreadyPushed = false // 押下フラグ
-
-  function emitAnswer() {
-    if (alreadyPushed) return
-    alreadyPushed = true
-    answerBtn.classList.add("disabled")
-    socket.emit("answer")
-  }
-
-  function resetPushState() {
-    alreadyPushed = false
-    answerBtn.classList.remove("disabled")
-  }
-
-  socket.on("updateList", (list) => {
-    answerList.innerHTML = list.map((u, i) => `${i + 1}. ${u}`).join("<br>")
-  })
-
-  socket.on("play", (soundId) => {
-    const audio = document.getElementById(soundId)
-    if (audio) {
-      audio.currentTime = 0
-      audio.play()
-    }
-
-    if (soundId === "seikai" || soundId === "boo") {
-      resetPushState()
-    }
-  })
-</script>
+    <div id="answerList" class="answer-list"></div>
+  </div>
 
   <!-- 音声 -->
   <audio id="boo" src="assets/boo.mp3"></audio>
   <audio id="seikai" src="assets/seikai.mp3"></audio>
   <audio id="button" src="assets/button.mp3"></audio>
 
-  <!-- Socket.io CDN -->
+  <!-- Socket.io -->
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
     const socket = io()
@@ -181,12 +159,15 @@
     const game = document.getElementById("gameScreen")
     const admin = document.getElementById("adminUI")
     const player = document.getElementById("playerUI")
+    const answerBtn = document.getElementById("answerBtn")
     const answerList = document.getElementById("answerList")
     const slider = document.getElementById("volumeSlider")
     const label = document.getElementById("volumeLabel")
     const audios = document.querySelectorAll("audio")
     const usernameInput = document.getElementById("username")
     const startBtn = document.getElementById("startBtn")
+
+    let alreadyPushed = false
 
     const savedName = localStorage.getItem("username")
     if (savedName) usernameInput.value = savedName
@@ -218,11 +199,19 @@
     audios.forEach(a => a.volume = savedVol / 100)
 
     function emitAnswer() {
+      if (alreadyPushed) return
+      alreadyPushed = true
+      answerBtn.classList.add("disabled")
       socket.emit("answer")
     }
 
     function emitSound(type) {
       socket.emit("sound", type)
+    }
+
+    function resetPushState() {
+      alreadyPushed = false
+      answerBtn.classList.remove("disabled")
     }
 
     socket.on("updateList", (list) => {
@@ -234,6 +223,9 @@
       if (audio) {
         audio.currentTime = 0
         audio.play()
+      }
+      if (soundId === "seikai" || soundId === "boo") {
+        resetPushState()
       }
     })
   </script>
