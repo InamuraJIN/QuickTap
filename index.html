@@ -1,33 +1,34 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>QuickTap</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     @font-face {
       font-family: "Geist";
       src: url("https://assets.codepen.io/605876/GeistVF.ttf") format("truetype");
     }
 
-    * { box-sizing: border-box; padding: 0; margin: 0; }
-
-    :root { --size: 20px; }
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
 
     body {
       font-family: "Geist", sans-serif;
       background: hsl(0 0% 6%);
-      overflow: hidden;
       color: white;
       min-height: 100vh;
+      overflow: hidden;
     }
 
     .background {
       position: fixed;
       inset: 0;
       background: conic-gradient(from 180deg at 50% 70%, hsla(0,0%,98%,1) 0deg, #eec32d 72deg, #ec4b4b 144deg, #709ab9 216deg, #4dffbf 288deg, hsla(0,0%,98%,1) 1turn);
-      mask: radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50% 50% / var(--size) var(--size),
+      mask: radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50% 50% / 20px 20px,
              url("https://assets.codepen.io/605876/noise-mask.png") 256px 50% / 256px 256px;
       mask-composite: intersect;
       animation: flicker 20s infinite linear;
@@ -35,7 +36,9 @@
     }
 
     @keyframes flicker {
-      to { mask-position: 50% 50%, 0 50%; }
+      to {
+        mask-position: 50% 50%, 0 50%;
+      }
     }
 
     .bg-text {
@@ -44,7 +47,6 @@
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: clamp(6rem, 15vw, 14rem);
-      font-family: "Geist", sans-serif;
       font-weight: 200;
       color: hsl(0 0% 2%);
       mix-blend-mode: soft-light;
@@ -64,7 +66,9 @@
       gap: 20px;
     }
 
-    .hidden { display: none !important; }
+    .hidden {
+      display: none !important;
+    }
 
     input {
       font-size: 1.2rem;
@@ -75,15 +79,15 @@
       text-align: center;
     }
 
-    .button {
+    button {
       font-size: 1.2rem;
-      padding: 12px 24px;
+      padding: 15px 25px;
+      background: #888;
       border: none;
-      border-radius: 6px;
-      background: #aaa;
+      border-radius: 5px;
       color: white;
+      font-weight: bold;
       cursor: pointer;
-      min-width: 160px;
     }
 
     .volume-control {
@@ -108,20 +112,22 @@
   <div class="background"></div>
   <div class="bg-text">JIN</div>
 
+  <!-- ログイン -->
   <div id="loginScreen" class="centered">
     <h1>QuickTap</h1>
     <input type="text" id="username" placeholder="Enter your name" />
-    <button class="button" id="startBtn">GO!</button>
+    <button id="startBtn">GO!</button>
   </div>
 
+  <!-- ゲーム -->
   <div id="gameScreen" class="centered hidden">
     <div id="adminUI" class="hidden">
-      <button class="button" onclick="sendSound('seikai')">正解</button>
-      <button class="button" onclick="sendSound('boo')">残念</button>
+      <button onclick="emitSound('seikai')">正解</button>
+      <button onclick="emitSound('boo')">残念</button>
     </div>
 
     <div id="playerUI" class="hidden">
-      <button class="button" onclick="sendAnswer()">押</button>
+      <button onclick="emitAnswer()">押</button>
     </div>
 
     <div class="volume-control">
@@ -132,11 +138,13 @@
     <div id="answerList" class="answer-list"></div>
   </div>
 
-  <!-- Audio Elements -->
+  <!-- 音声 -->
   <audio id="boo" src="assets/boo.mp3"></audio>
   <audio id="seikai" src="assets/seikai.mp3"></audio>
   <audio id="button" src="assets/button.mp3"></audio>
 
+  <!-- Socket.io CDN -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
     const socket = io()
 
@@ -145,15 +153,12 @@
     const admin = document.getElementById("adminUI")
     const player = document.getElementById("playerUI")
     const answerList = document.getElementById("answerList")
-
-    const usernameInput = document.getElementById("username")
-    const startBtn = document.getElementById("startBtn")
-
     const slider = document.getElementById("volumeSlider")
     const label = document.getElementById("volumeLabel")
     const audios = document.querySelectorAll("audio")
+    const usernameInput = document.getElementById("username")
+    const startBtn = document.getElementById("startBtn")
 
-    // 初期設定
     const savedName = localStorage.getItem("username")
     if (savedName) usernameInput.value = savedName
 
@@ -161,24 +166,15 @@
       const name = usernameInput.value.trim()
       if (!name) return
       localStorage.setItem("username", name)
-
+      socket.emit("username", name)
       login.classList.add("hidden")
       game.classList.remove("hidden")
-
-      socket.emit("username", name)
-
       if (name === "Ad") {
         admin.classList.remove("hidden")
       } else {
         player.classList.remove("hidden")
       }
     })
-
-    // 音量スライダー
-    const savedVol = localStorage.getItem("volume") || "50"
-    slider.value = savedVol
-    label.textContent = `${savedVol}%`
-    audios.forEach(a => a.volume = savedVol / 100)
 
     slider.addEventListener("input", () => {
       const v = slider.value
@@ -187,28 +183,29 @@
       audios.forEach(a => a.volume = v / 100)
     })
 
-    // 押したとき
-    function sendAnswer() {
+    const savedVol = localStorage.getItem("volume") || "50"
+    slider.value = savedVol
+    label.textContent = `${savedVol}%`
+    audios.forEach(a => a.volume = savedVol / 100)
+
+    function emitAnswer() {
       socket.emit("answer")
     }
 
-    // 音を全員に送信
-    function sendSound(type) {
+    function emitSound(type) {
       socket.emit("sound", type)
     }
 
-    // 音を受信したら再生
-    socket.on("play", (type) => {
-      const el = document.getElementById(type)
-      if (el) {
-        el.currentTime = 0
-        el.play()
-      }
-    })
-
-    // 押されたユーザー一覧を更新
     socket.on("updateList", (list) => {
       answerList.innerHTML = list.map((u, i) => `${i + 1}. ${u}`).join("<br>")
+    })
+
+    socket.on("play", (soundId) => {
+      const audio = document.getElementById(soundId)
+      if (audio) {
+        audio.currentTime = 0
+        audio.play()
+      }
     })
   </script>
 </body>
