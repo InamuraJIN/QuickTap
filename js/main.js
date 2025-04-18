@@ -12,31 +12,20 @@ class QuickTapApp {
     // アプリケーション起動時の処理
     console.log('QuickTap アプリケーションを起動しました');
     
-    // 5分自動リセットタイマー
-    this.setupAutoReset();
-    
     // キーボードイベント設定
     this.setupKeyboardEvents();
   }
   
-  setupAutoReset() {
-    // 5分（300,000ミリ秒）ごとにリセット
-    setInterval(() => {
-      // 管理者がいない場合も自動リセット
-      uiController.resetPushState();
-    }, 300000);
-  }
-  
   setupKeyboardEvents() {
-    // スペースキーで回答
+    // スペースキーで回答、Escでリセット
     document.addEventListener('keydown', (e) => {
       // ログイン画面ではキーボードショートカットを無効
-      if (!uiController.loginScreen.classList.contains('hidden')) {
+      if (uiController.loginScreen.style.display !== 'none') {
         return;
       }
       
       // スペースキーで回答
-      if (e.code === 'Space' && !uiController.isAdmin) {
+      if ((e.code === 'Space' || e.code === 'Enter') && !uiController.isAdmin) {
         uiController.handleAnswer();
         e.preventDefault();
       }
@@ -48,6 +37,14 @@ class QuickTapApp {
         } else if (e.key === '0') {
           socketHandler.emitSound('boo');
         }
+      }
+    });
+
+    // スペースキー押しっぱなし防止
+    document.addEventListener('keyup', (event) => {
+      const code = event.code;
+      if (code === 'Space' || code === 'Enter') {
+        event.preventDefault();
       }
     });
   }

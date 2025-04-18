@@ -29,7 +29,11 @@ class SocketHandler {
     // 音声再生
     this.socket.on('play', (soundId) => {
       audioController.play(soundId);
-      uiController.resetAfterSound(soundId);
+      
+      // 正解または残念が再生されたらリセット
+      if (soundId === 'seikai' || soundId === 'boo') {
+        uiController.resetPushState();
+      }
     });
     
     // リセットイベント
@@ -40,16 +44,32 @@ class SocketHandler {
     // 切断時
     this.socket.on('disconnect', () => {
       this.connected = false;
+      console.log('サーバーとの接続が切れました');
+    });
+    
+    // 再接続時
+    this.socket.on('connect', () => {
+      if (!this.connected) {
+        this.connected = true;
+        console.log('サーバーに再接続しました');
+        this.socket.emit('username', uiController.username);
+      }
     });
   }
   
   emitAnswer() {
-    if (!this.connected) return;
+    if (!this.connected) {
+      console.log('サーバーに接続されていません');
+      return;
+    }
     this.socket.emit('answer');
   }
   
   emitSound(type) {
-    if (!this.connected) return;
+    if (!this.connected) {
+      console.log('サーバーに接続されていません');
+      return;
+    }
     this.socket.emit('sound', type);
   }
 }

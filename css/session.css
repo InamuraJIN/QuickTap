@@ -1,0 +1,274 @@
+:root {
+    --main-line-color: #EA6264;
+  }
+  
+  * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: "Helvetica Neue",
+    Arial,
+    "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",
+    Meiryo,
+    sans-serif;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: #f8f8f8;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #232527;
+    }
+  }
+  
+  #main {
+    text-align: center;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+  
+  .loginScreen__wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .loginScreen__title {
+    color: white;
+    font-size: 1.2rem;
+    padding-bottom: 15px;
+  }
+  
+  .loginScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 550px;
+  }
+  
+  .loginScreen__input {
+    width: 300px;
+    height: 50px;
+    border: 0;
+    padding-bottom: 25px;
+  }
+  
+  .loginScreen__input input {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 25px;
+    border-radius: 5px;
+  }
+  
+  .loginScreen__JoinButton {
+    width: 150px;
+    height: 50px;
+    font-size: 25px;
+  }
+  
+  .loginScreen__JoinButton button {
+    width: 100%;
+    height: 100%;
+    font-size: 25px;
+    border: 1px solid #fff;
+    border-radius: 3px;
+    color: #fff;
+    line-height: 50px;
+    background-color: transparent;
+    cursor: pointer;
+  }
+  
+  .login {
+    margin: 10px;
+  }
+  
+  #playGame {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .btnArea {
+    width: auto;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .btnArea--admin {
+    height: auto;
+    gap: 20px;
+  }
+  
+  .btn-circle-3d {
+    display: inline-block;
+    text-decoration: none;
+    background: #ff8181;
+    color: #FFF;
+    width: 180px;
+    height: 180px;
+    line-height: 190px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+    overflow: hidden;
+    border-bottom: solid 3px #bd6565;
+    transition: .1s;
+  }
+  
+  .btn-circle-3d--shadow {
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.29);
+  }
+  
+  .disabled {
+    background: #c0c0c0 !important;
+    border-bottom: solid 3px #a5a5a5 !important;
+    pointer-events: none;
+  }
+  
+  .pushable:active {
+    transform: translateY(8px);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
+    border-bottom: none;
+  }
+  
+  .btn-square-pop {
+    height: 50px;
+    width: 127px;
+    padding: 0.25em 0.5em;
+    margin-top: 10px;
+    text-decoration: none;
+    color: #FFF;
+    background: #fd9535;
+    border: none;
+    border-bottom: solid 2px #8c521d;
+    border-radius: 4px;
+    font-weight: bold;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+  }
+  
+  .btn-square-pop--shadow {
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2), 0 2px 2px rgba(0, 0, 0, 0.19);
+  }
+  
+  .btn-square-pop:active {
+    border-bottom: solid 2px #fd9535;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.30);
+  }
+  
+  .btn-square-pop--boboo {
+    height: 60px;
+    width: 127px;
+    background: #2994ff;
+    border-bottom: solid 2px #164e88;
+    font-size: 18px;
+  }
+  
+  .btn-square-pop--boboo:active {
+    border-bottom: solid 2px #2994ff;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.30);
+  }
+  
+  .btn-square-pop--pinpon {
+    height: 60px;
+    width: 127px;
+    background: #ff3b29;
+    border-bottom: solid 2px #862017;
+    font-size: 18px;
+  }
+  
+  .btn-square-pop--pinpon:active {
+    border-bottom: solid 2px #ff3b29;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.30);
+  }
+  
+  .btn-square-pop--off {
+    background: #c1c1c1;
+    box-shadow: none;
+    border-bottom: none;
+    pointer-events: none;
+  }
+  
+  .controllers {
+    padding-top: 25px;
+    padding-bottom: 25px;
+    width: 300px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .controllers__item {
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+  
+  .controllers__button {
+    border: 0 none;
+    font-size: 1.4rem;
+    border-radius: 4px;
+    padding: 10px;
+    height: 44px;
+    width: 44px;
+    position: relative;
+    display: inline-block;
+    text-decoration: none;
+    color: #FFF;
+    background: #9acc2d;
+    border-bottom: solid 2px #769923;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+  }
+  
+  .controllers__button--shadow {
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2), 0 2px 2px rgba(0, 0, 0, 0.19);
+  }
+  
+  .controllers__button:active {
+    border-bottom: solid 2px #9acc2d;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.30);
+  }
+  
+  .volume-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 10px;
+  }
+  
+  input[type="range"] {
+    width: 150px;
+  }
+  
+  .displayPushedPlayers {
+    margin-top: 20px;
+    min-height: 40px;
+  }
+  
+  .displayPushedPlayerName {
+    padding: 0;
+    color: #fafafa;
+    font-size: 20pt;
+    text-shadow: rgb(15, 15, 15) 3px 0px 0px, rgb(15, 15, 15) 2.83487px 0.981584px 0px, rgb(15, 15, 15) 2.35766px 1.85511px 0px, rgb(15, 15, 15) 1.62091px 2.52441px 0px, rgb(15, 15, 15) 0.705713px 2.91581px 0px, rgb(15, 15, 15) -0.287171px 2.98622px 0px, rgb(15, 15, 15) -1.24844px 2.72789px 0px, rgb(15, 15, 15) -2.07227px 2.16926px 0px, rgb(15, 15, 15) -2.66798px 1.37182px 0px, rgb(15, 15, 15) -2.96998px 0.42336px 0px, rgb(15, 15, 15) -2.94502px -0.571704px 0px, rgb(15, 15, 15) -2.59586px -1.50383px 0px, rgb(15, 15, 15) -1.96093px -2.27041px 0px, rgb(15, 15, 15) -1.11013px -2.78704px 0px, rgb(15, 15, 15) -0.137119px -2.99686px 0px, rgb(15, 15, 15) 0.850987px -2.87677px 0px, rgb(15, 15, 15) 1.74541px -2.43999px 0px, rgb(15, 15, 15) 2.44769px -1.73459px 0px, rgb(15, 15, 15) 2.88051px -0.838247px 0px;
+  }

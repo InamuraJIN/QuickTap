@@ -66,6 +66,9 @@ io.on("connection", (socket) => {
       if (resetTimer) {
         clearTimeout(resetTimer)
       }
+      
+      // 新しいタイマーをセット
+      setupAutoReset()
     }
   })
 
@@ -88,9 +91,6 @@ function setupAutoReset() {
     pushedUsers.length = 0
     io.emit("updateList", pushedUsers)
     io.emit("resetButtons")
-    
-    // 次の自動リセット
-    setupAutoReset()
   }, 300000)
 }
 
