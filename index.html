@@ -6,123 +6,210 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("https://assets.codepen.io/605876/GeistVF.ttf") format("truetype");
+    }
+
+    * { box-sizing: border-box; padding: 0; margin: 0; }
+
+    :root { --size: 20px; }
+
     body {
-      font-family: sans-serif;
-      background: #222;
+      font-family: "Geist", sans-serif;
+      background: hsl(0 0% 6%);
+      overflow: hidden;
       color: white;
-      text-align: center;
-      padding-top: 50px;
+      min-height: 100vh;
     }
 
-    .hidden { display: none }
-
-    input, button {
-      font-size: 1.2rem;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      margin: 10px;
+    .background {
+      position: fixed;
+      inset: 0;
+      background: conic-gradient(from 180deg at 50% 70%, hsla(0,0%,98%,1) 0deg, #eec32d 72deg, #ec4b4b 144deg, #709ab9 216deg, #4dffbf 288deg, hsla(0,0%,98%,1) 1turn);
+      mask: radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50% 50% / var(--size) var(--size),
+             url("https://assets.codepen.io/605876/noise-mask.png") 256px 50% / 256px 256px;
+      mask-composite: intersect;
+      animation: flicker 20s infinite linear;
+      z-index: -2;
     }
+
+    @keyframes flicker {
+      to { mask-position: 50% 50%, 0 50%; }
+    }
+
+    .bg-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(6rem, 15vw, 14rem);
+      font-family: "Geist", sans-serif;
+      font-weight: 200;
+      color: hsl(0 0% 2%);
+      mix-blend-mode: soft-light;
+      filter: drop-shadow(0 0 2px white);
+      text-shadow: 2px 2px white;
+      z-index: -1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .centered {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 20px;
+    }
+
+    .hidden { display: none !important; }
 
     input {
+      font-size: 1.2rem;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
       width: 250px;
       text-align: center;
     }
 
-    button {
-      background: #555;
+    .button {
+      font-size: 1.2rem;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      background: #aaa;
       color: white;
       cursor: pointer;
+      min-width: 160px;
     }
 
-    #answerBtn {
-      font-size: 2rem;
-      padding: 40px;
-      background: #666;
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 30px;
     }
 
-    #list {
-      margin-top: 40px;
+    input[type="range"] {
+      width: 200px;
+    }
+
+    .answer-list {
+      margin-top: 20px;
       font-size: 1.5rem;
+      text-shadow: 1px 1px 2px black;
     }
   </style>
 </head>
 <body>
-  <div id="login">
+  <div class="background"></div>
+  <div class="bg-text">JIN</div>
+
+  <div id="loginScreen" class="centered">
     <h1>QuickTap</h1>
-    <input type="text" id="username" placeholder="Enter your name">
-    <button id="joinBtn">GO!</button>
+    <input type="text" id="username" placeholder="Enter your name" />
+    <button class="button" id="startBtn">GO!</button>
   </div>
 
-  <div id="game" class="hidden">
+  <div id="gameScreen" class="centered hidden">
     <div id="adminUI" class="hidden">
-      <button onclick="sendSound('seikai')">正解</button>
-      <button onclick="sendSound('boo')">残念</button>
+      <button class="button" onclick="sendSound('seikai')">正解</button>
+      <button class="button" onclick="sendSound('boo')">残念</button>
     </div>
 
     <div id="playerUI" class="hidden">
-      <button id="answerBtn">押</button>
+      <button class="button" onclick="sendAnswer()">押</button>
     </div>
 
-    <div id="list"></div>
+    <div class="volume-control">
+      🔊 <input type="range" id="volumeSlider" min="0" max="100" value="50" />
+      <span id="volumeLabel">50%</span>
+    </div>
+
+    <div id="answerList" class="answer-list"></div>
   </div>
 
-  <audio id="button" src="assets/button.mp3"></audio>
-  <audio id="seikai" src="assets/seikai.mp3"></audio>
+  <!-- Audio Elements -->
   <audio id="boo" src="assets/boo.mp3"></audio>
+  <audio id="seikai" src="assets/seikai.mp3"></audio>
+  <audio id="button" src="assets/button.mp3"></audio>
 
   <script>
     const socket = io()
-    const login = document.getElementById("login")
-    const game = document.getElementById("game")
-    const usernameInput = document.getElementById("username")
-    const joinBtn = document.getElementById("joinBtn")
-    const list = document.getElementById("list")
-    const answerBtn = document.getElementById("answerBtn")
-    const adminUI = document.getElementById("adminUI")
-    const playerUI = document.getElementById("playerUI")
 
-    joinBtn.onclick = () => {
+    const login = document.getElementById("loginScreen")
+    const game = document.getElementById("gameScreen")
+    const admin = document.getElementById("adminUI")
+    const player = document.getElementById("playerUI")
+    const answerList = document.getElementById("answerList")
+
+    const usernameInput = document.getElementById("username")
+    const startBtn = document.getElementById("startBtn")
+
+    const slider = document.getElementById("volumeSlider")
+    const label = document.getElementById("volumeLabel")
+    const audios = document.querySelectorAll("audio")
+
+    // 初期設定
+    const savedName = localStorage.getItem("username")
+    if (savedName) usernameInput.value = savedName
+
+    startBtn.addEventListener("click", () => {
       const name = usernameInput.value.trim()
       if (!name) return
       localStorage.setItem("username", name)
 
-      socket.emit("username", name)
-
       login.classList.add("hidden")
       game.classList.remove("hidden")
-      if (name === "Ad") {
-        adminUI.classList.remove("hidden")
-      } else {
-        playerUI.classList.remove("hidden")
-      }
-    }
 
-    answerBtn.onclick = () => {
+      socket.emit("username", name)
+
+      if (name === "Ad") {
+        admin.classList.remove("hidden")
+      } else {
+        player.classList.remove("hidden")
+      }
+    })
+
+    // 音量スライダー
+    const savedVol = localStorage.getItem("volume") || "50"
+    slider.value = savedVol
+    label.textContent = `${savedVol}%`
+    audios.forEach(a => a.volume = savedVol / 100)
+
+    slider.addEventListener("input", () => {
+      const v = slider.value
+      label.textContent = `${v}%`
+      localStorage.setItem("volume", v)
+      audios.forEach(a => a.volume = v / 100)
+    })
+
+    // 押したとき
+    function sendAnswer() {
       socket.emit("answer")
     }
 
+    // 音を全員に送信
     function sendSound(type) {
       socket.emit("sound", type)
     }
 
-    socket.on("play", (soundId) => {
-      const audio = document.getElementById(soundId)
-      if (audio) {
-        audio.currentTime = 0
-        audio.play()
+    // 音を受信したら再生
+    socket.on("play", (type) => {
+      const el = document.getElementById(type)
+      if (el) {
+        el.currentTime = 0
+        el.play()
       }
     })
 
-    socket.on("updateList", (names) => {
-      list.innerHTML = names.map((n, i) => `${i + 1}. ${n}`).join("<br>")
+    // 押されたユーザー一覧を更新
+    socket.on("updateList", (list) => {
+      answerList.innerHTML = list.map((u, i) => `${i + 1}. ${u}`).join("<br>")
     })
-
-    // 自動ログイン
-    const saved = localStorage.getItem("username")
-    if (saved) {
-      usernameInput.value = saved
-    }
   </script>
 </body>
 </html>
