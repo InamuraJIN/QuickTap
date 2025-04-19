@@ -41,15 +41,15 @@
     transform: translate(-50%, -50%);
     font-size: clamp(6rem, 15vw, 14rem);
     font-weight: 200;
-    color: hsl(0 0% 6%);
+    color: hsl(0 0% 10%);
     mix-blend-mode: soft-light;
     filter: drop-shadow(0 0 1px white);
-    opacity: 0.1;
+    opacity: 0.18; /* ← 0.1から少し濃くした */
     z-index: -1;
     pointer-events: none;
     user-select: none;
   }
-  
+
   .centered {
     display: flex;
     flex-direction: column;
