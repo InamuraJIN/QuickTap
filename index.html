@@ -1,76 +1,44 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>QuickTap</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-  <link rel="stylesheet" href="css/session.css">
-  <meta property="og:title" content="QuickTap">
-  <meta property="og:description" content="ブラウザだけで遊べるクイズボタンウェブアプリ">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<div id="main">
-  <!-- ログイン画面 -->
-  <div id="loginScreenWrap" class="loginScreen__wrap">
-    <div class="loginScreen">
-      <div class="loginScreen__title">
-        <label for="playerName">ニックネームを入力してください</label>
-      </div>
-      <div class="loginScreen__input">
-        <input id="playerName">
-      </div>
-      <div class="loginScreen__JoinButton">
-        <button id="join">参加する</button>
-      </div>
-    </div>
+  <div class="background"></div>
+  <div class="bg-text">JIN</div>
+
+  <div id="loginScreen" class="centered">
+    <h1>QuickTap</h1>
+    <input type="text" id="username" placeholder="Enter your name" />
+    <button id="startBtn">GO!</button>
   </div>
 
-  <!-- ゲーム画面 -->
-  <div id="playGame" style="display: none;">
-    <!-- 管理者UI -->
-    <div id="adminUI" style="display: none;">
-      <div class="btnArea btnArea--admin">
-        <button id="correct" class="btn-square-pop btn-square-pop--pinpon">正解</button>
-        <button id="wrong" class="btn-square-pop btn-square-pop--boboo">残念</button>
-      </div>
+  <div id="gameScreen" class="centered hidden">
+    <div id="adminUI" class="hidden">
+      <button id="seikaiBtn">正解</button>
+      <button id="booBtn">残念</button>
+    </div>
+    <div id="playerUI" class="hidden">
+      <button id="answerBtn">CRICK</button>
     </div>
 
-    <!-- プレイヤーUI -->
-    <div id="playerUI" style="display: none;">
-      <div class="btnArea">
-        <a href="#" id="push" class="btn-circle-3d btn-circle-3d--shadow pushable">CRICK!</a>
-      </div>
+    <div class="volume-control">
+      🔊 <input type="range" id="volumeSlider" min="0" max="100" value="50" />
+      <span id="volumeLabel">50%</span>
     </div>
 
-    <!-- 共通UI -->
-    <div class="controllers">
-      <div class="controllers__item">
-        <button id="volume_button" class="controllers__button controllers__button--shadow">
-          🔊
-        </button>
-      </div>
-      <div class="volume-control" style="display: none;">
-        <input type="range" id="volumeSlider" min="0" max="100" value="50" />
-        <span id="volumeLabel">50%</span>
-      </div>
-    </div>
-
-    <div id="displayPushedPlayers" class="displayPushedPlayers"></div>
+    <div id="answerList" class="answer-list"></div>
   </div>
-</div>
 
-<!-- 音声 -->
-<audio id="boboo" src="assets/boo.mp3"></audio>
-<audio id="pinpon" src="assets/seikai.mp3"></audio>
-<audio id="buzzer" src="assets/button.mp3"></audio>
+  <audio id="boo" src="assets/boo.mp3"></audio>
+  <audio id="seikai" src="assets/seikai.mp3"></audio>
+  <audio id="button" src="assets/button.mp3"></audio>
 
-<!-- Socket.io -->
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-
-<!-- アプリケーションスクリプト -->
-<script src="js/audio-controller.js"></script>
-<script src="js/ui-controller.js"></script>
-<script src="js/socket-handler.js"></script>
-<script src="js/main.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="socket.js" type="module"></script>
+  <script src="main.js" type="module"></script>
 </body>
 </html>
