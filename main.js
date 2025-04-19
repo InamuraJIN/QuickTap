@@ -1,9 +1,6 @@
 const socket = io("https://quicktap.onrender.com", {
   transports: ["websocket"]
 })
-socket.on("connect", () => {
-  console.log("✅ Socket.io接続成功:", socket.id)
-})
 
 let alreadyPushed = false
 const answerBtn = document.getElementById("answerBtn")
@@ -18,7 +15,6 @@ const admin = document.getElementById("adminUI")
 const player = document.getElementById("playerUI")
 const answerList = document.getElementById("answerList")
 
-// 音量初期化
 const savedVol = localStorage.getItem("volume") || "50"
 slider.value = savedVol
 label.textContent = `${savedVol}%`
@@ -53,7 +49,6 @@ answerBtn.addEventListener("click", () => {
   alreadyPushed = true
   answerBtn.classList.add("disabled")
   socket.emit("answer")
-  socket.emit("sound", "button") // ← これ重要！
 })
 
 document.getElementById("seikaiBtn").addEventListener("click", () => {
@@ -64,12 +59,6 @@ document.getElementById("booBtn").addEventListener("click", () => {
   socket.emit("sound", "boo")
 })
 
-function resetPushState() {
-  alreadyPushed = false
-  answerBtn.classList.remove("disabled")
-}
-
-// イベント受信
 socket.on("updateList", (list) => {
   answerList.innerHTML = list.map((u, i) => `${i + 1}. ${u}`).join("<br>")
 })
@@ -80,7 +69,9 @@ socket.on("play", (soundId) => {
     audio.currentTime = 0
     audio.play()
   }
-  if (soundId === "seikai" || soundId === "boo") {
-    resetPushState()
-  }
+})
+
+socket.on("reset", () => {
+  alreadyPushed = false
+  answerBtn.classList.remove("disabled")
 })

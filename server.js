@@ -7,12 +7,23 @@ const io = require("socket.io")(http, {
     methods: ["GET", "POST"]
   }
 })
-
 const path = require("path")
+
 app.use(express.static(__dirname))
 app.use("/assets", express.static(path.join(__dirname, "assets")))
 
 const pushedUsers = []
+let resetTimer = null
+
+function scheduleReset() {
+  if (resetTimer) clearTimeout(resetTimer)
+  resetTimer = setTimeout(() => {
+    pushedUsers.length = 0
+    io.emit("updateList", pushedUsers)
+    io.emit("reset")
+    console.log("⏱️ 自動リセット実行")
+  }, 5 * 60 * 1000)
+}
 
 io.on("connection", (socket) => {
   console.log("✅ 接続:", socket.id)
@@ -27,12 +38,13 @@ io.on("connection", (socket) => {
 
     pushedUsers.push(name)
 
-    // Ad以外 & 5人まで → 音を鳴らす
+    // 一般ユーザーのみ音、5人まで
     if (name !== "Ad" && pushedUsers.length <= 5) {
       io.emit("play", "button")
     }
 
     io.emit("updateList", pushedUsers)
+    scheduleReset()
   })
 
   socket.on("sound", (which) => {
@@ -42,11 +54,11 @@ io.on("connection", (socket) => {
       pushedUsers.length = 0
       io.emit("updateList", pushedUsers)
       io.emit("play", "seikai")
-      io.emit("reset") // ← クライアント側に押下フラグのリセットを指示
+      io.emit("reset")
+      scheduleReset()
     }
-    
+
     if (which === "boo") {
-      // booはリスト更新なし、音だけ
       io.emit("play", "boo")
     }
 
@@ -62,17 +74,5 @@ io.on("connection", (socket) => {
 
 const PORT = process.env.PORT || 3000
 http.listen(PORT, () => {
-  console.log("🚀 サーバー起動中 ポート:", PORT)
+  console.log("🚀 サーバー起動中：http://localhost:" + PORT)
 })
-
-let resetTimer = null
-
-function scheduleReset() {
-  if (resetTimer) clearTimeout(resetTimer)
-  resetTimer = setTimeout(() => {
-    pushedUsers.length = 0
-    io.emit("updateList", pushedUsers)
-    io.emit("reset")
-    console.log("⏱️ 自動リセット実行")
-  }, 5 * 60 * 1000)
-}
