@@ -1,4 +1,8 @@
-const socket = io()
+const socket = io("https://quicktap.onrender.com")
+
+socket.on("connect", () => {
+  console.log("✅ Socket.io接続成功:", socket.id)
+})
 
 let alreadyPushed = false
 const answerBtn = document.getElementById("answerBtn")
