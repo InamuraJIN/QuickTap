@@ -45,6 +45,7 @@ answerBtn.addEventListener("click", () => {
   alreadyPushed = true
   answerBtn.classList.add("disabled")
   window.socket.emit("answer")
+  window.socket.emit("sound", "button")  // ← これを追加！
 })
 
 document.getElementById("seikaiBtn").addEventListener("click", () => {
