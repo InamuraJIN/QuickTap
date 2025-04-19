@@ -42,8 +42,9 @@ io.on("connection", (socket) => {
       pushedUsers.length = 0
       io.emit("updateList", pushedUsers)
       io.emit("play", "seikai")
+      io.emit("reset") // ← クライアント側に押下フラグのリセットを指示
     }
-
+    
     if (which === "boo") {
       // booはリスト更新なし、音だけ
       io.emit("play", "boo")
