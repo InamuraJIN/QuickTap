@@ -1,5 +1,6 @@
-const socket = io("https://quicktap.onrender.com")
-
+const socket = io("https://quicktap.onrender.com", {
+  transports: ["websocket"]
+})
 socket.on("connect", () => {
   console.log("✅ Socket.io接続成功:", socket.id)
 })
