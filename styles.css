@@ -44,7 +44,7 @@
     color: hsl(0 0% 10%);
     mix-blend-mode: soft-light;
     filter: drop-shadow(0 0 1px white);
-    opacity: 0.18; /* ← 0.1から少し濃くした */
+    opacity: 0.5; /* ← 0.1から少し濃くした */
     z-index: -1;
     pointer-events: none;
     user-select: none;

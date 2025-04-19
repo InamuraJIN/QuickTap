@@ -64,3 +64,15 @@ const PORT = process.env.PORT || 3000
 http.listen(PORT, () => {
   console.log("🚀 サーバー起動中 ポート:", PORT)
 })
+
+let resetTimer = null
+
+function scheduleReset() {
+  if (resetTimer) clearTimeout(resetTimer)
+  resetTimer = setTimeout(() => {
+    pushedUsers.length = 0
+    io.emit("updateList", pushedUsers)
+    io.emit("reset")
+    console.log("⏱️ 自動リセット実行")
+  }, 5 * 60 * 1000)
+}
