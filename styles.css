@@ -47,10 +47,10 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: clamp(6rem, 15vw, 14rem);
+  font-size: clamp(15rem, 35vw, 35rem);
   font-weight: 800;
   font-family: "Geist", sans-serif;
-  color: rgba(255, 255, 255, 0.05);  /* ← ← ← 薄い白でしっかり見せる */
+  color: rgba(255, 255, 255, 0.05);
   z-index: -1;
   pointer-events: none;
   user-select: none;
@@ -111,4 +111,17 @@ input[type="range"] {
   margin-top: 20px;
   font-size: 1.5rem;
   text-shadow: 1px 1px 2px black;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+#adminUI {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  z-index: 10;
 }

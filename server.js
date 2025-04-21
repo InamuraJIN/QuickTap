@@ -38,7 +38,6 @@ io.on("connection", (socket) => {
 
     pushedUsers.push(name)
 
-    // 一般ユーザーのみ音、5人まで
     if (name !== "Ad" && pushedUsers.length <= 5) {
       io.emit("play", "button")
     }
@@ -64,6 +63,13 @@ io.on("connection", (socket) => {
 
     if (which === "button") {
       io.emit("play", "button")
+    }
+
+    if (which === "resetSilent") {
+      pushedUsers.length = 0
+      io.emit("updateList", pushedUsers)
+      io.emit("reset")
+      scheduleReset()
     }
   })
 

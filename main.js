@@ -59,8 +59,14 @@ document.getElementById("booBtn").addEventListener("click", () => {
   socket.emit("sound", "boo")
 })
 
+document.getElementById("resetBtn").addEventListener("click", () => {
+  socket.emit("sound", "resetSilent")
+})
+
 socket.on("updateList", (list) => {
-  answerList.innerHTML = list.map((u, i) => `${i + 1}. ${u}`).join("<br>")
+  answerList.innerHTML =
+    `<div>人数: ${list.length}人</div><br>` +
+    list.map((u, i) => `${i + 1}. ${u}`).join("<br>")
 })
 
 socket.on("play", (soundId) => {
