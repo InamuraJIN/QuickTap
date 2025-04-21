@@ -116,11 +116,12 @@ input[type="range"] {
   padding-right: 10px;
 }
 
+/* 管理者用ボタン：画面中央に横並び */
 #adminUI {
   position: fixed;
-  bottom: 20px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   display: flex;
   gap: 20px;
   z-index: 10;
