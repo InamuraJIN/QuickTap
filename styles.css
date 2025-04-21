@@ -112,24 +112,23 @@ input[type="range"] {
   width: 200px;
 }
 
-/* ユーザーリストが見切れてもOKなように下方向は制限しない */
-.answer-list {
-  margin-top: 20px;
-  font-size: 1.5rem;
-  text-shadow: 1px 1px 2px black;
-  max-height: 60vh;
-  overflow-y: hidden;
-  padding-right: 10px;
-}
-
-/* 管理者ボタンを常に画面中央に固定 */
+/* 管理者ボタン：画面中央に常に固定 */
 #adminUI {
   position: fixed;
-  top: 50%;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
   gap: 20px;
-  z-index: 10;
+  z-index: 11;
   background: transparent;
+}
+
+/* ユーザーリスト：ボタンの下から始まって下方向に表示、はみ出しOK */
+.answer-list {
+  margin-top: 320px; /* ボタン＋音量から距離を取る */
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 2px black;
+  padding-right: 10px;
+  z-index: 1;
 }
