@@ -97,6 +97,7 @@ button {
   opacity: 0.6;
 }
 
+/* 音量スライダー（完成形） */
 .volume-control {
   position: fixed;
   top: 55%;
@@ -112,7 +113,7 @@ input[type="range"] {
   width: 200px;
 }
 
-/* 管理者ボタン：画面中央に固定（確定位置） */
+/* 管理者ボタン：完成形として中央固定 */
 #adminUI {
   position: fixed;
   top: 45%;
@@ -124,18 +125,18 @@ input[type="range"] {
   background: transparent;
 }
 
-/* 一般ユーザーのCRICKボタン：画面中央に固定 */
+/* 一般ユーザーの CRICK ボタン：画面中央に固定 */
 #playerUI {
   position: fixed;
-  top: 45%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
 }
 
-/* ユーザーリスト：より下から表示開始、はみ出しOK */
+/* ユーザーリスト：ボタンにもスライダーにも被らないようにさらに下へ */
 .answer-list {
-  margin-top: 380px;  /* ← さらに下へずらした */
+  margin-top: 400px;
   font-size: 1.5rem;
   text-shadow: 1px 1px 2px black;
   padding-right: 10px;
