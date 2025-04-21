@@ -15,6 +15,7 @@ body {
   color: white;
   min-height: 100vh;
   overflow: hidden;
+  position: relative;
 }
 
 .background {
@@ -107,16 +108,17 @@ input[type="range"] {
   width: 200px;
 }
 
+/* ユーザーリストが見切れてもOKなように下方向は制限しない */
 .answer-list {
   margin-top: 20px;
   font-size: 1.5rem;
   text-shadow: 1px 1px 2px black;
   max-height: 60vh;
-  overflow-y: auto;
+  overflow-y: hidden;
   padding-right: 10px;
 }
 
-/* 管理者用ボタン：画面中央に横並び */
+/* 管理者ボタンを常に画面中央に固定 */
 #adminUI {
   position: fixed;
   top: 50%;
@@ -125,4 +127,5 @@ input[type="range"] {
   display: flex;
   gap: 20px;
   z-index: 10;
+  background: transparent;
 }
