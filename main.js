@@ -51,15 +51,15 @@ answerBtn.addEventListener("click", () => {
   socket.emit("answer")
 })
 
-document.getElementById("seikaiBtn").addEventListener("click", () => {
+document.getElementById("seikaiBtn")?.addEventListener("click", () => {
   socket.emit("sound", "seikai")
 })
 
-document.getElementById("booBtn").addEventListener("click", () => {
+document.getElementById("booBtn")?.addEventListener("click", () => {
   socket.emit("sound", "boo")
 })
 
-document.getElementById("resetBtn").addEventListener("click", () => {
+document.getElementById("resetBtn")?.addEventListener("click", () => {
   socket.emit("sound", "resetSilent")
 })
 
@@ -79,5 +79,14 @@ socket.on("play", (soundId) => {
 
 socket.on("reset", () => {
   alreadyPushed = false
-  answerBtn.classList.remove("disabled")
+  answerBtn?.classList?.remove("disabled")
+})
+
+// 🔄 タブがアクティブになった時に再同期
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    alreadyPushed = false
+    answerBtn?.classList?.remove("disabled")
+    socket.emit("syncRequest")
+  }
 })

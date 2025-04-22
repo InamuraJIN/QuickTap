@@ -73,6 +73,12 @@ io.on("connection", (socket) => {
     }
   })
 
+  // 🔄 クライアントからの同期リクエスト（復帰時用）
+  socket.on("syncRequest", () => {
+    socket.emit("updateList", pushedUsers)
+    socket.emit("reset")
+  })
+
   socket.on("disconnect", () => {
     console.log("❌ 切断:", socket.id)
   })
