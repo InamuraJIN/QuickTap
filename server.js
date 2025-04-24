@@ -46,8 +46,7 @@ io.on("connection", (socket) => {
     scheduleReset()
   })
 
-  socket.on("untap", () => {
-    const name = socket.username
+  socket.on("untap", (name) => {
     const index = pushedUsers.indexOf(name)
     if (index !== -1) {
       pushedUsers.splice(index, 1)
