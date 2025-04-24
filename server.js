@@ -75,6 +75,10 @@ socket.on("updateList", (list) => {
   answerList.innerHTML =
     `<div>人数: ${list.length}人</div><br>` +
     list.map((u, i) => `${i + 1}. ${u}`).join("<br>")
+
+  const name = localStorage.getItem("username")
+  alreadyPushed = list.includes(name)
+  answerBtn.textContent = alreadyPushed ? "UnTap..." : "Tap!"
 })
 
 socket.on("play", (soundId) => {
@@ -93,9 +97,6 @@ socket.on("reset", () => {
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
-    alreadyPushed = false
-    answerBtn?.classList?.remove("disabled")
-    answerBtn.textContent = "Tap!"
     socket.emit("syncRequest")
   }
 })
