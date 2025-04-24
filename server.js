@@ -38,12 +38,21 @@ io.on("connection", (socket) => {
 
     pushedUsers.push(name)
 
-    if (name !== "Ad" && pushedUsers.length <= 5) {
+    if (name !== "Ad" && pushedUsers.indexOf(name) < 3) {
       io.emit("play", "button")
     }
 
     io.emit("updateList", pushedUsers)
     scheduleReset()
+  })
+
+  socket.on("untap", () => {
+    const name = socket.username
+    const index = pushedUsers.indexOf(name)
+    if (index !== -1) {
+      pushedUsers.splice(index, 1)
+      io.emit("updateList", pushedUsers)
+    }
   })
 
   socket.on("sound", (which) => {
@@ -58,6 +67,10 @@ io.on("connection", (socket) => {
     }
 
     if (which === "boo") {
+      if (pushedUsers.length > 0) {
+        pushedUsers.shift()
+        io.emit("updateList", pushedUsers)
+      }
       io.emit("play", "boo")
     }
 
@@ -73,10 +86,11 @@ io.on("connection", (socket) => {
     }
   })
 
-  // 🔄 クライアントからの同期リクエスト（復帰時用）
   socket.on("syncRequest", () => {
     socket.emit("updateList", pushedUsers)
-    socket.emit("reset")
+    if (!pushedUsers.includes(socket.username)) {
+      socket.emit("reset")
+    }
   })
 
   socket.on("disconnect", () => {

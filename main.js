@@ -15,7 +15,7 @@ const admin = document.getElementById("adminUI")
 const player = document.getElementById("playerUI")
 const answerList = document.getElementById("answerList")
 
-const savedVol = localStorage.getItem("volume") || "50"
+const savedVol = localStorage.getItem("volume") || "30"
 slider.value = savedVol
 label.textContent = `${savedVol}%`
 audios.forEach(a => a.volume = savedVol / 100)
@@ -42,13 +42,23 @@ startBtn.addEventListener("click", () => {
   } else {
     player.classList.remove("hidden")
   }
+  socket.emit("syncRequest")
 })
 
+answerBtn.textContent = "Tap!"
+
 answerBtn.addEventListener("click", () => {
-  if (alreadyPushed) return
-  alreadyPushed = true
-  answerBtn.classList.add("disabled")
-  socket.emit("answer")
+  if (!alreadyPushed) {
+    alreadyPushed = true
+    answerBtn.classList.add("disabled")
+    answerBtn.textContent = "UnTap..."
+    socket.emit("answer")
+  } else {
+    alreadyPushed = false
+    answerBtn.classList.remove("disabled")
+    answerBtn.textContent = "Tap!"
+    socket.emit("untap")
+  }
 })
 
 document.getElementById("seikaiBtn")?.addEventListener("click", () => {
@@ -80,13 +90,14 @@ socket.on("play", (soundId) => {
 socket.on("reset", () => {
   alreadyPushed = false
   answerBtn?.classList?.remove("disabled")
+  answerBtn.textContent = "Tap!"
 })
 
-// 🔄 タブがアクティブになった時に再同期
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
     alreadyPushed = false
     answerBtn?.classList?.remove("disabled")
+    answerBtn.textContent = "Tap!"
     socket.emit("syncRequest")
   }
 })
