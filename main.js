@@ -1,8 +1,8 @@
-const socket = io("https://quicktap.onrender.com", {
-  transports: ["websocket"]
-})
+const socket = io({ transports: ["websocket"] })
 
 let alreadyPushed = false
+let isAd = false
+let currentUsername = ""
 const answerBtn = document.getElementById("answerBtn")
 const usernameInput = document.getElementById("username")
 const startBtn = document.getElementById("startBtn")
@@ -33,11 +33,13 @@ if (savedName) usernameInput.value = savedName
 startBtn.addEventListener("click", () => {
   const name = usernameInput.value.trim()
   if (!name) return
+  currentUsername = name
   localStorage.setItem("username", name)
   socket.emit("username", name)
   login.classList.add("hidden")
   game.classList.remove("hidden")
   if (name === "Ad") {
+    isAd = true
     admin.classList.remove("hidden")
   } else {
     player.classList.remove("hidden")
@@ -45,20 +47,10 @@ startBtn.addEventListener("click", () => {
   socket.emit("syncRequest")
 })
 
-answerBtn.textContent = "Tap!"
-
 answerBtn.addEventListener("click", () => {
-  if (!alreadyPushed) {
-    alreadyPushed = true
-    answerBtn.classList.add("disabled")
-    answerBtn.textContent = "UnTap..."
-    socket.emit("answer")
-  } else {
-    alreadyPushed = false
-    answerBtn.classList.remove("disabled")
-    answerBtn.textContent = "Tap!"
-    socket.emit("untap")
-  }
+  alreadyPushed = !alreadyPushed
+  answerBtn.textContent = alreadyPushed ? "UnTap..." : "Tap!"
+  socket.emit("answer")
 })
 
 document.getElementById("seikaiBtn")?.addEventListener("click", () => {
@@ -77,6 +69,11 @@ socket.on("updateList", (list) => {
   answerList.innerHTML =
     `<div>人数: ${list.length}人</div><br>` +
     list.map((u, i) => `${i + 1}. ${u}`).join("<br>")
+
+  if (!isAd) {
+    alreadyPushed = list.includes(currentUsername)
+    answerBtn.textContent = alreadyPushed ? "UnTap..." : "Tap!"
+  }
 })
 
 socket.on("play", (soundId) => {
@@ -89,15 +86,11 @@ socket.on("play", (soundId) => {
 
 socket.on("reset", () => {
   alreadyPushed = false
-  answerBtn?.classList?.remove("disabled")
   answerBtn.textContent = "Tap!"
 })
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
-    alreadyPushed = false
-    answerBtn?.classList?.remove("disabled")
-    answerBtn.textContent = "Tap!"
     socket.emit("syncRequest")
   }
 })
