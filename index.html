@@ -10,30 +10,62 @@
   <div class="background"></div>
   <div class="bg-text">JIN</div>
 
+  <!-- トップ画面 -->
   <div id="loginScreen" class="centered">
     <h1>QuickTap</h1>
-    <input type="text" id="username" placeholder="Enter your name" />
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+      <p id="nameNote">名前をアルファベットで記入してください</p>
+      <input type="text" id="username" placeholder="Enter your name" />
+    </div>
     <button id="startBtn">GO!</button>
   </div>
 
+  <!-- ゲーム画面 -->
   <div id="gameScreen" class="centered hidden">
+    <!-- Ad UI -->
     <div id="adminUI" class="hidden">
-      <button id="seikaiBtn">正解</button>
-      <button id="booBtn">残念</button>
-      <button id="resetBtn">リセット</button>
-    </div>
-    <div id="playerUI" class="hidden">
-      <button id="answerBtn">CRICK</button>
+      <!-- 正解/残念/リセット -->
+      <div style="display: flex; gap: 20px;">
+        <button id="seikaiBtn">正解</button>
+        <button id="booBtn">残念</button>
+        <button id="resetBtn">リセット</button>
+      </div>
+
+      <!-- 〇 × 公開チェック ランキング -->
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <button id="maruBtn">〇</button>
+        <button id="batsuBtn">×</button>
+        <label style="display: flex; flex-direction: column; align-items: center; font-size: 0.9rem;">
+          公開
+          <input type="checkbox" id="rankingToggle" />
+        </label>
+        <button id="rankingBtn" style="min-width: 100px;">ランキング</button>
+      </div>
+
+      <!-- 〇×正解数カウント（Ad用） -->
+      <div id="judgeCounts" style="text-align: center; margin-top: 270px;">〇:0、×:0、計:0</div>
     </div>
 
+    <!-- 一般ユーザー UI -->
+    <div id="playerUI" class="hidden">
+      <button id="answerBtn">Tap!</button>
+      <div>
+        <button id="selectMaru">〇</button>
+        <button id="selectBatsu">×</button>
+      </div>
+    </div>
+
+    <!-- 共通：音量 -->
     <div class="volume-control">
       🔊 <input type="range" id="volumeSlider" min="0" max="100" value="50" />
       <span id="volumeLabel">50%</span>
     </div>
 
+    <!-- 共通：ユーザーリスト -->
     <div id="answerList" class="answer-list"></div>
   </div>
 
+  <!-- 音 -->
   <audio id="boo" src="assets/boo.mp3"></audio>
   <audio id="seikai" src="assets/seikai.mp3"></audio>
   <audio id="button" src="assets/button.mp3"></audio>

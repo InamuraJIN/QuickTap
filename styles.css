@@ -97,10 +97,10 @@ button {
   opacity: 0.6;
 }
 
-/* 音量スライダー（完成形） */
+/* 音量スライダー */
 .volume-control {
   position: fixed;
-  top: 55%;
+  top: 58%;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -113,32 +113,65 @@ input[type="range"] {
   width: 200px;
 }
 
-/* 管理者ボタン：完成形として中央固定 */
+/* ログイン画面：名前入力メッセージ */
+#loginScreen p {
+  font-size: 1rem;
+  color: white;
+  margin-bottom: -5px;
+}
+
+/* 名前エラー時 */
+#error {
+  color: red;
+}
+
+/* 管理者UI配置 */
 #adminUI {
+  position: fixed;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  z-index: 11;
+}
+
+#adminUI > div {
+  display: flex;
+  gap: 20px;
+}
+
+/* 一般ユーザーの UI配置 */
+#playerUI {
   position: fixed;
   top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
-  gap: 20px;
-  z-index: 11;
-  background: transparent;
-}
-
-/* 一般ユーザーの CRICK ボタン：画面中央に固定 */
-#playerUI {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
   z-index: 10;
 }
 
-/* ユーザーリスト：ボタンにもスライダーにも被らないようにさらに下へ */
+#playerUI div {
+  display: flex;
+  gap: 20px;
+}
+
+/* リスト表示は一番下に */
 .answer-list {
   margin-top: 400px;
   font-size: 1.5rem;
   text-shadow: 1px 1px 2px black;
   padding-right: 10px;
   z-index: 1;
+}
+
+/* ×ボタンのフォントサイズだけ補正（ボタンサイズは変えない） */
+#selectBatsu,
+#batsuBtn {
+  font-size: 1.8rem;
 }
