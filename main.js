@@ -1,4 +1,6 @@
-const socket = io({ transports: ["websocket"] })
+const socket = io("https://quicktap.onrender.com", {
+  transports: ["websocket"]
+})
 
 let alreadyPushed = false
 let isAd = false
@@ -48,21 +50,7 @@ startBtn.addEventListener("click", () => {
 })
 
 answerBtn.addEventListener("click", () => {
-  alreadyPushed = !alreadyPushed
-  answerBtn.textContent = alreadyPushed ? "UnTap..." : "Tap!"
-  socket.emit("answer")
-})
-
-document.getElementById("seikaiBtn")?.addEventListener("click", () => {
-  socket.emit("sound", "seikai")
-})
-
-document.getElementById("booBtn")?.addEventListener("click", () => {
-  socket.emit("sound", "boo")
-})
-
-document.getElementById("resetBtn")?.addEventListener("click", () => {
-  socket.emit("sound", "resetSilent")
+  socket.emit("answerToggle") // 新たなイベント名でトグル送信
 })
 
 socket.on("updateList", (list) => {

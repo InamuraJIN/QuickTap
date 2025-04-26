@@ -2,7 +2,7 @@ const express = require("express")
 const app = express()
 const http = require("http").createServer(app)
 const io = require("socket.io")(http, {
-  cors: { origin: "*", methods: ["GET","POST"] }
+  cors: { origin: "*", methods: ["GET", "POST"] }
 })
 const path = require("path")
 
@@ -21,18 +21,18 @@ function scheduleReset() {
   }, 5 * 60 * 1000)
 }
 
-io.on("connection", socket => {
-  socket.on("username", name => {
+io.on("connection", (socket) => {
+  socket.on("username", (name) => {
     socket.username = name
   })
 
-  socket.on("answer", () => {
+  socket.on("answerToggle", () => {
     const name = socket.username
     if (!name) return
 
-    const idx = pushedUsers.indexOf(name)
-    if (idx !== -1) {
-      pushedUsers.splice(idx, 1)
+    const index = pushedUsers.indexOf(name)
+    if (index !== -1) {
+      pushedUsers.splice(index, 1)
       socket.emit("reset")
     } else {
       pushedUsers.push(name)
@@ -45,7 +45,7 @@ io.on("connection", socket => {
     scheduleReset()
   })
 
-  socket.on("sound", which => {
+  socket.on("sound", (which) => {
     if (which === "seikai") {
       pushedUsers.length = 0
       io.emit("updateList", pushedUsers)
@@ -53,11 +53,13 @@ io.on("connection", socket => {
       io.emit("reset")
       scheduleReset()
     }
+
     if (which === "boo") {
-      if (pushedUsers.length) pushedUsers.shift()
+      if (pushedUsers.length > 0) pushedUsers.shift()
       io.emit("updateList", pushedUsers)
       io.emit("play", "boo")
     }
+
     if (which === "resetSilent") {
       pushedUsers.length = 0
       io.emit("updateList", pushedUsers)
