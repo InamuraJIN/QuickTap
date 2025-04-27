@@ -51,7 +51,7 @@ body {
   font-size: clamp(15rem, 35vw, 35rem);
   font-weight: 800;
   font-family: "Geist", sans-serif;
-  color: rgba(255, 255, 255, 0.05);
+  color: rgba(20, 20, 20, 0.8);
   z-index: -1;
   pointer-events: none;
   user-select: none;
@@ -163,12 +163,27 @@ input[type="range"] {
 
 /* リスト表示は一番下に */
 .answer-list {
-  margin-top: 400px;
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
   font-size: 1.5rem;
   text-shadow: 1px 1px 2px black;
-  padding-right: 10px;
-  z-index: 1;
 }
+
+#summaryBox {
+  margin-bottom: 10px;
+}
+
+.user-names {
+  font-size: 1.6rem;
+  font-weight: bold;
+  max-height: 150px;
+  overflow-y: auto;
+  text-align: center;
+}
+
 
 /* ×ボタンのフォントサイズだけ補正（ボタンサイズは変えない） */
 #selectBatsu,
