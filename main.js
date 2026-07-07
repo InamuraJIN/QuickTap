@@ -16,6 +16,12 @@ const player = document.getElementById("playerUI")
 const answerList = document.getElementById("answerList")
 const nameNote = document.getElementById("nameNote")
 const judge = document.getElementById("judgeCounts")
+const rankingScreen = document.getElementById("rankingScreen")
+const rankingList = document.getElementById("rankingList")
+const backBtn = document.getElementById("backBtn")
+const downloadBtn = document.getElementById("downloadBtn")
+const rankingToggle = document.getElementById("rankingToggle")
+const rankingBtn = document.getElementById("rankingBtn")
 
 const savedVol = localStorage.getItem("volume") || "30"
 slider.value = savedVol
@@ -39,12 +45,11 @@ startBtn.addEventListener("click", () => {
     return
   }
   nameNote.style.color = "white"
-
   localStorage.setItem("username", name)
   socket.emit("username", name)
   login.classList.add("hidden")
   game.classList.remove("hidden")
-  if (name === "Ad") {
+  if (/^Ad\d{4}$/.test(name) || name === "Ad") {
     admin.classList.remove("hidden")
   } else {
     player.classList.remove("hidden")
@@ -96,6 +101,23 @@ document.getElementById("resetBtn")?.addEventListener("click", () => {
   socket.emit("sound", "resetSilent")
 })
 
+rankingBtn?.addEventListener("click", () => {
+  const toggle = document.getElementById("rankingToggle")
+  const isPublic = toggle?.checked === true
+  socket.emit("rankingRequest", isPublic)
+})
+
+backBtn?.addEventListener("click", () => {
+  rankingScreen.classList.add("hidden")
+  downloadBtn.classList.add("hidden")
+  const name = localStorage.getItem("username")
+  if (/^Ad\d{4}$/.test(name) || name === "Ad") {
+    admin.classList.remove("hidden")
+  } else {
+    player.classList.remove("hidden")
+  }
+})
+
 socket.on("updateList", (list) => {
   const name = localStorage.getItem("username")
   alreadyPushed = list.includes(name)
@@ -113,7 +135,6 @@ socket.on("updateList", (list) => {
 })
 
 socket.on("judgeUpdate", ({ maru, batsu }) => {
-  const judge = document.getElementById("judgeCounts")
   if (judge) {
     judge.textContent = `〇:${maru}、×:${batsu}、計:${maru + batsu}`
   }
@@ -132,6 +153,39 @@ socket.on("reset", () => {
   answerBtn?.classList?.remove("disabled")
   answerBtn.textContent = "Tap!"
 })
+
+socket.on("rankingData", ({ list, isPublic }) => {
+  game.classList.remove("hidden")
+  player.classList.add("hidden")
+  admin.classList.add("hidden")
+  rankingScreen.classList.remove("hidden")
+
+  const sorted = Object.entries(list)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, score], i) => `${i + 1}. ${name}: ${score}点`)
+    .join("<br>")
+  rankingList.innerHTML = sorted
+
+  const name = localStorage.getItem("username")
+  if (/^Ad\d{4}$/.test(name)) {
+    downloadBtn.classList.remove("hidden")
+    createDownloadLink(list, name.slice(2, 6))
+  } else {
+    downloadBtn.classList.add("hidden")
+  }
+})
+
+function createDownloadLink(data, dateStr) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
+  const url = URL.createObjectURL(blob)
+  downloadBtn.onclick = () => {
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `ranking_${dateStr}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+}
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
